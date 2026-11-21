@@ -3,7 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-import { ShieldCheck, Layers, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { PROJECT_CATEGORIES } from "@kradl/shared";
 import { ProjectCard, ProjectCardData } from "@/components/ProjectCard";
 import { AsciiOrbitArt } from "@/components/AsciiOrbitArt";
@@ -182,55 +182,6 @@ export default function ExplorePage() {
             </div>
           </div>
         </div>
-      </section>
-
-      {/* Dual Mode-Selector Cards (FloatLaunch-inspired tactile filter cards) */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <button
-          type="button"
-          onClick={() => setStatus("all")}
-          className={`relative overflow-hidden text-left rounded-xl p-4 border transition-all cursor-pointer ${
-            status === "all"
-              ? "bg-[var(--bg-surface)] border-emerald-500/40 shadow-[inset_0_1px_0_0_rgba(16,185,129,0.25)]"
-              : "bg-[var(--bg-surface)]/50 border-white/[0.07] hover:border-white/[0.15]"
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 font-display font-semibold text-sm text-white">
-              <Layers className="w-4 h-4 text-zinc-300" />
-              All Mainnet Launches
-            </div>
-            <span className="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-white/[0.06] text-[var(--text-secondary)]">
-              Permissionless
-            </span>
-          </div>
-          <p className="mt-1.5 text-xs text-[var(--text-muted)]">
-            Every fair-launch app token trading on Kradl bonding curves &amp; graduated Uniswap pools.
-          </p>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setStatus(status === "verified" ? "all" : "verified")}
-          className={`relative overflow-hidden text-left rounded-xl p-4 border transition-all cursor-pointer ${
-            status === "verified"
-              ? "bg-[var(--bg-surface)] border-emerald-500/40 shadow-[inset_0_1px_0_0_rgba(16,185,129,0.25)]"
-              : "bg-[var(--bg-surface)]/50 border-white/[0.07] hover:border-white/[0.15]"
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="inline-flex items-center gap-2 font-display font-semibold text-sm text-white">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
-              Verified Builders
-            </div>
-            <span className="font-mono text-[10px] uppercase px-2 py-0.5 rounded bg-emerald-500/12 text-emerald-400">
-              Live App + GitHub
-            </span>
-          </div>
-          <p className="mt-1.5 text-xs text-[var(--text-muted)]">
-            Filtered to real software with verified Live App URLs, GitHub repositories, and anti-rug locks.
-          </p>
-        </button>
       </section>
 
       {/* Filter & Universal Scanner Toolbar */}
