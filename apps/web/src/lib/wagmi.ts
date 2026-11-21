@@ -7,7 +7,9 @@ export const robinhoodMainnet = defineChain({
   name: "Robinhood Chain",
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
   rpcUrls: {
-    default: { http: ["https://rpc.mainnet.chain.robinhood.com"] },
+    default: {
+      http: ["https://robinhood-rpc.publicnode.com", "https://rpc.mainnet.chain.robinhood.com"],
+    },
   },
   blockExplorers: {
     default: { name: "Blockscout", url: "https://robinhoodchain.blockscout.com" },
@@ -30,6 +32,6 @@ export const robinhoodTestnet = defineChain({
 export const wagmiConfig = getDefaultConfig({
   appName: "Kradl — App & Project Launchpad",
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "2a5321176b3021abefa996cecb5339bf",
-  chains: [robinhoodTestnet, robinhoodMainnet, baseSepolia, base, hardhat],
+  chains: [robinhoodMainnet, robinhoodTestnet, base, baseSepolia, hardhat],
   ssr: true,
 });

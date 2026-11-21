@@ -34,7 +34,7 @@ const config: HardhatUserConfig = {
       accounts,
     },
     robinhoodMainnet: {
-      url: process.env.ROBINHOOD_MAINNET_RPC_URL || "https://rpc.mainnet.chain.robinhood.com",
+      url: process.env.ROBINHOOD_MAINNET_RPC_URL || "https://robinhood-rpc.publicnode.com",
       chainId: 4663,
       accounts,
     },

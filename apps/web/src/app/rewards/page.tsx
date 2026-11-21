@@ -54,9 +54,9 @@ export default function RewardsPage() {
     refetchInterval: 15_000,
   });
 
-  const distributorAddress = getMerkleDistributorAddress(46630);
+  const distributorAddress = getMerkleDistributorAddress(4663);
   const distributorExplorer = distributorAddress
-    ? getAddressExplorerUrl(46630, distributorAddress)
+    ? getAddressExplorerUrl(4663, distributorAddress)
     : null;
 
   const referralLink = address
@@ -111,7 +111,7 @@ export default function RewardsPage() {
         <div>
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[11px] font-mono text-emerald-400 mb-3">
             <Gift className="w-3.5 h-3.5" />
-            {data?.season ?? "Season 1 · Testnet Genesis"}
+            {data?.season ?? "Season 1 · Mainnet Genesis"}
           </div>
           <h1 className="font-display font-bold text-3xl text-white tracking-tight">
             Rewards &amp; Airdrop Portal

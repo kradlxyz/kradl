@@ -15,18 +15,23 @@ const rewardsSnapshotCache = new TtlCache<{
   totalPointsDistributed: number;
 }>(15_000);
 
+const MAINNET_CHAIN_IDS = [4663, 8453];
+
 async function getSeasonSnapshot() {
   const cached = rewardsSnapshotCache.get();
   if (cached) return cached;
 
   const [projects, updates, trades, referrals] = await Promise.all([
     prisma.project.findMany({
+      where: { chainId: { in: MAINNET_CHAIN_IDS } },
       select: { id: true, creatorAddress: true, isVerified: true },
     }),
     prisma.projectUpdate.findMany({
+      where: { project: { chainId: { in: MAINNET_CHAIN_IDS } } },
       select: { projectId: true, authorAddress: true },
     }),
     prisma.trade.findMany({
+      where: { chainId: { in: MAINNET_CHAIN_IDS } },
       select: { projectId: true, traderAddress: true, ethAmount: true },
     }),
     prisma.referral.findMany({
@@ -143,7 +148,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json({
-      season: "Season 1 · Testnet Genesis",
+      season: "Season 1 · Mainnet Genesis",
       rules: POINTS_CONFIG,
       totalParticipants: ranked.length,
       totalPointsDistributed,

@@ -20,7 +20,7 @@ export const KRADL_CHAINS: Record<number, KradlChainConfig> = {
     shortName: "Robinhood",
     isTestnet: false,
     nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-    rpcUrl: "https://rpc.mainnet.chain.robinhood.com",
+    rpcUrl: "https://robinhood-rpc.publicnode.com",
     explorerUrl: "https://robinhoodchain.blockscout.com",
     badgeColor: "#00E5A0",
   },

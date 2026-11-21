@@ -392,7 +392,7 @@ export default function LitepaperPage() {
             <table className="w-full text-left text-xs font-mono">
               <thead>
                 <tr className="text-[var(--text-muted)] border-b border-[var(--border-subtle)]">
-                  <th className="py-2.5 px-4">Contract (RH Testnet 46630)</th>
+                  <th className="py-2.5 px-4">Contract (Robinhood Mainnet 4663)</th>
                   <th className="py-2.5 px-4">Verified Address</th>
                 </tr>
               </thead>
@@ -403,19 +403,23 @@ export default function LitepaperPage() {
                     addr: "0x2FEE1b921F68A19bFdA0B587dff8bC245727D518",
                   },
                   {
-                    name: "KradlVestingVault",
+                    name: "UniswapV3Migrator",
                     addr: "0xD02a30af2430FD2CCE14987016819AeD4744d20f",
                   },
                   {
+                    name: "KradlVestingVault",
+                    addr: "0x94DD22D82Ae5f4370BCEBF97F94A505D413a70F5",
+                  },
+                  {
                     name: "KradlMerkleDistributor",
-                    addr: "0xe66D459b6E4E5b70Cb6129f827869E3e5D38E60C",
+                    addr: "0xd352961fc0b140F73142FF8EB20B59c077d6e8bF",
                   },
                 ].map((c) => (
                   <tr key={c.name}>
                     <td className="py-2.5 px-4 text-white">{c.name}</td>
                     <td className="py-2.5 px-4">
                       <a
-                        href={`https://explorer.testnet.chain.robinhood.com/address/${c.addr}`}
+                        href={`https://robinhoodchain.blockscout.com/address/${c.addr}`}
                         target="_blank"
                         rel="noreferrer"
                         className="inline-flex items-center gap-1.5 text-emerald-400 hover:underline"
@@ -442,10 +446,10 @@ export default function LitepaperPage() {
                 active: true,
               },
               {
-                phase: "Phase 2 · Next",
+                phase: "Phase 2 · Live",
                 title: "Robinhood Chain Mainnet (4663)",
-                desc: "Production launch with UniswapV3Migrator (permanent LP NFT burn → DEXScreener) and Safe Multisig ownership.",
-                active: false,
+                desc: "Production launch with UniswapV3Migrator (permanent LP NFT burn → DEXScreener) and Season 1 Mainnet Genesis rewards.",
+                active: true,
               },
               {
                 phase: "Phase 3",
