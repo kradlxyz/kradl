@@ -192,3 +192,13 @@ model Referral {
 
   @@index([referrerAddress])
 }
+
+model UploadedAsset {
+  id              String   @id @default(cuid())
+  mimeType        String
+  data            Bytes
+  uploaderAddress String
+  createdAt       DateTime @default(now())
+
+  @@index([uploaderAddress])
+}

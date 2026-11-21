@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { X } from "lucide-react";
 import { PROJECT_CATEGORIES, ProjectCategory } from "@kradl/shared";
 import { useKradlAuth } from "./Providers";
+import { LogoUploadInput } from "./LogoUploadInput";
 
 export interface EditableProjectData {
   chainId: number;
@@ -150,15 +151,9 @@ export function EditProjectModal({ project, onClose, onSaved }: EditProjectModal
             </div>
             <div>
               <label className="block text-xs font-mono text-[var(--text-secondary)] mb-1">
-                Logo Image URL
+                Logo Image (URL or Upload)
               </label>
-              <input
-                type="url"
-                value={logoUrl}
-                onChange={(e) => setLogoUrl(e.target.value)}
-                placeholder="https://kradl.xyz/icon.svg"
-                className="w-full px-3 py-2 rounded-lg bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-sm text-white outline-none"
-              />
+              <LogoUploadInput value={logoUrl} onChange={setLogoUrl} />
             </div>
           </div>
 

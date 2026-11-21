@@ -14,6 +14,7 @@ import {
   getLaunchpadAddress,
 } from "@kradl/shared";
 import { useKradlAuth } from "@/components/Providers";
+import { LogoUploadInput } from "@/components/LogoUploadInput";
 import { parseRevertError } from "@/lib/format";
 
 export default function LaunchPage() {
@@ -224,15 +225,9 @@ export default function LaunchPage() {
 
               <div>
                 <label className="block text-xs font-mono text-[var(--text-secondary)] mb-1.5">
-                  Logo Image URL (Optional)
+                  Logo Image (URL or Upload)
                 </label>
-                <input
-                  type="url"
-                  value={logoUrl}
-                  onChange={(e) => setLogoUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-sm text-white outline-none"
-                />
+                <LogoUploadInput value={logoUrl} onChange={setLogoUrl} />
               </div>
             </div>
 
