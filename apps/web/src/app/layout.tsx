@@ -53,6 +53,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <span>Non-custodial app &amp; project launchpad</span>
               </div>
               <div className="flex flex-wrap items-center gap-5 font-mono">
+                <Link href="/litepaper" className="hover:text-white transition-colors">
+                  Litepaper
+                </Link>
                 <Link href="/revenue" className="hover:text-white transition-colors">
                   Revenue
                 </Link>
