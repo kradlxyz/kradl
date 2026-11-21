@@ -7,11 +7,11 @@ import { TermsGate } from "@/components/TermsGate";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://kradl.xyz"),
-  title: "Kradl — On-Chain App & Project Launchpad",
+  title: "Kradl · On-Chain App & Project Launchpad",
   description:
     "Launch fair-launch tokens for real apps on Robinhood Chain and Base. 0.5% of every trade goes directly to the builder.",
   openGraph: {
-    title: "Kradl — On-Chain App & Project Launchpad",
+    title: "Kradl · On-Chain App & Project Launchpad",
     description:
       "Fund real apps from block one on Robinhood Chain and Base. 0.5% of every trade streams directly to the builder.",
     url: "https://kradl.xyz",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@kradlxyz",
     creator: "@kradlxyz",
-    title: "Kradl — On-Chain App & Project Launchpad",
+    title: "Kradl · On-Chain App & Project Launchpad",
     description:
       "Fund real apps from block one on Robinhood Chain and Base. 0.5% of every trade streams directly to the builder.",
   },

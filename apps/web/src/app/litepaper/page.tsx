@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { ExternalLink, ShieldCheck, ArrowRight, FileText } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Litepaper — Kradl",
+  title: "Litepaper · Kradl",
   description:
     "Kradl Litepaper v1.0: Why Kradl exists, bonding curve math, 0.5% continuous ETH builder fees, automatic DEX liquidity lock, anti-rug vesting vault, and Season 1 rewards.",
 };

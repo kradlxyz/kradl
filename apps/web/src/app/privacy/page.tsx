@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — Kradl",
+  title: "Privacy Policy · Kradl",
   description: "Privacy Policy for the Kradl non-custodial EVM app & project launchpad.",
 };
 

@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Use — Kradl",
+  title: "Terms of Use · Kradl",
   description: "Terms of Use for the Kradl non-custodial EVM app & project launchpad interface.",
 };
 

@@ -3,6 +3,7 @@ import { formatEther } from "viem";
 import { prisma } from "@/lib/prisma";
 import { TtlCache } from "@/lib/rateLimit";
 
+const MAINNET_CHAIN_IDS = [4663, 8453];
 const revenueCache = new TtlCache<Record<string, unknown>>(15_000);
 
 export async function GET() {
@@ -14,12 +15,14 @@ export async function GET() {
 
     const [projectAgg, verifiedCount, totalTrades, recentTrades] = await Promise.all([
       prisma.project.aggregate({
+        where: { chainId: { in: MAINNET_CHAIN_IDS } },
         _count: { id: true },
         _sum: { totalVolumeEth: true, totalCreatorFeeEth: true },
       }),
-      prisma.project.count({ where: { isVerified: true } }),
-      prisma.trade.count(),
+      prisma.project.count({ where: { isVerified: true, chainId: { in: MAINNET_CHAIN_IDS } } }),
+      prisma.trade.count({ where: { chainId: { in: MAINNET_CHAIN_IDS } } }),
       prisma.trade.findMany({
+        where: { chainId: { in: MAINNET_CHAIN_IDS } },
         orderBy: { timestamp: "desc" },
         take: 40,
         include: {
@@ -33,7 +36,7 @@ export async function GET() {
     // Aggregate daily protocol fees over last 30 days
     const since30d = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
     const trades30d = await prisma.trade.findMany({
-      where: { timestamp: { gte: since30d } },
+      where: { chainId: { in: MAINNET_CHAIN_IDS }, timestamp: { gte: since30d } },
       select: { timestamp: true, ethAmount: true, platformFee: true, creatorFee: true },
       orderBy: { timestamp: "asc" },
     });

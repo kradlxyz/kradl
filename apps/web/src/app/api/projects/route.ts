@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
+const MAINNET_CHAIN_IDS = [4663, 8453];
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -15,7 +17,9 @@ export async function GET(req: NextRequest) {
 
     const where: Prisma.ProjectWhereInput = {};
 
-    if (chainIdParam && chainIdParam !== "all") {
+    if (!chainIdParam || chainIdParam === "mainnet" || chainIdParam === "all") {
+      where.chainId = { in: MAINNET_CHAIN_IDS };
+    } else {
       const parsedChainId = Number(chainIdParam);
       if (!Number.isNaN(parsedChainId)) {
         where.chainId = parsedChainId;
@@ -75,10 +79,12 @@ export async function GET(req: NextRequest) {
       }),
       prisma.project.count({ where }),
       prisma.project.aggregate({
+        where: { chainId: { in: MAINNET_CHAIN_IDS } },
         _count: { id: true },
         _sum: { totalVolumeEth: true, totalCreatorFeeEth: true },
       }),
       prisma.trade.findMany({
+        where: { chainId: { in: MAINNET_CHAIN_IDS } },
         orderBy: { timestamp: "desc" },
         take: 15,
         include: {

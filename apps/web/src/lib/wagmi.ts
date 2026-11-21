@@ -30,7 +30,7 @@ export const robinhoodTestnet = defineChain({
 });
 
 export const wagmiConfig = getDefaultConfig({
-  appName: "Kradl — App & Project Launchpad",
+  appName: "Kradl · App & Project Launchpad",
   projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || "2a5321176b3021abefa996cecb5339bf",
   chains: [robinhoodMainnet, robinhoodTestnet, base, baseSepolia, hardhat],
   ssr: true,

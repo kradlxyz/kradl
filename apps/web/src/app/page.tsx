@@ -17,15 +17,14 @@ interface ProjectsResponse {
 }
 
 const CHAIN_FILTERS = [
-  { id: "all", label: "All chains" },
-  { id: "46630", label: "Robinhood Testnet" },
-  { id: "4663", label: "Robinhood Mainnet" },
-  { id: "84532", label: "Base Sepolia" },
+  { id: "mainnet", label: "All Mainnets" },
+  { id: "4663", label: "Robinhood Chain" },
   { id: "8453", label: "Base" },
+  { id: "46630", label: "Robinhood Testnet" },
 ];
 
 export default function ExplorePage() {
-  const [chainId, setChainId] = useState("all");
+  const [chainId, setChainId] = useState("mainnet");
   const [category, setCategory] = useState("All");
   const [status, setStatus] = useState("all");
   const [sort, setSort] = useState("trending");

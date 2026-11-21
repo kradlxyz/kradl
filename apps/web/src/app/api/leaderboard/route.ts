@@ -1,13 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+const MAINNET_CHAIN_IDS = [4663, 8453];
+
 export async function GET(req: NextRequest) {
   try {
     const chainIdParam = new URL(req.url).searchParams.get("chainId");
     const where =
-      chainIdParam && chainIdParam !== "all" && !Number.isNaN(Number(chainIdParam))
+      chainIdParam &&
+      chainIdParam !== "all" &&
+      chainIdParam !== "mainnet" &&
+      !Number.isNaN(Number(chainIdParam))
         ? { chainId: Number(chainIdParam) }
-        : {};
+        : { chainId: { in: MAINNET_CHAIN_IDS } };
 
     const [topProjects, builderStats] = await Promise.all([
       prisma.project.findMany({
