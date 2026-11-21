@@ -55,7 +55,7 @@ export function PriceChart({
         horzLines: { color: "rgba(255, 255, 255, 0.04)" },
       },
       width: el.clientWidth,
-      height: 380,
+      height: typeof window !== "undefined" && window.innerWidth < 640 ? 280 : 380,
       timeScale: {
         borderColor: "#232329",
         timeVisible: true,

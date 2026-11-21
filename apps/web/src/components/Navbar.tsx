@@ -135,16 +135,16 @@ export function Navbar() {
 
           <Link
             href="/launch"
-            className="inline-flex items-center h-9 px-4 rounded-lg text-[13px] font-semibold bg-[var(--accent-primary)] text-[var(--accent-ink)] hover:bg-zinc-200 transition-colors"
+            className="hidden sm:inline-flex items-center h-9 px-4 rounded-lg text-[13px] font-semibold bg-[var(--accent-primary)] text-[var(--accent-ink)] hover:bg-zinc-200 transition-colors whitespace-nowrap shrink-0"
           >
             Launch App
           </Link>
 
-          <div className="flex items-center [&_button]:!h-9 [&_button]:!rounded-lg [&_button]:!text-[13px]">
+          <div className="flex items-center [&_button]:!h-9 [&_button]:!rounded-lg [&_button]:!text-[13px] [&_button]:!whitespace-nowrap">
             <ConnectButton
               showBalance={{ smallScreen: false, largeScreen: true }}
               accountStatus={{ smallScreen: "avatar", largeScreen: "address" }}
-              chainStatus={{ smallScreen: "icon", largeScreen: "name" }}
+              chainStatus={{ smallScreen: "none", largeScreen: "name" }}
             />
           </div>
 
@@ -169,7 +169,29 @@ export function Navbar() {
 
       {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-3 space-y-1">
+        <div className="lg:hidden border-t border-[var(--border-subtle)] bg-[var(--bg-surface)] px-4 py-3 space-y-1.5">
+          <div className="flex items-center gap-2 pb-2 mb-1 border-b border-[var(--border-subtle)] sm:hidden">
+            <Link
+              href="/launch"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex-1 inline-flex items-center justify-center h-10 px-4 rounded-lg text-sm font-semibold bg-[var(--accent-primary)] text-[var(--accent-ink)] hover:bg-zinc-200 transition-colors"
+            >
+              Launch App
+            </Link>
+            {isConnected && !isAuthenticated && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  signIn();
+                }}
+                disabled={isSigningIn}
+                className="h-10 px-4 rounded-lg text-xs font-mono border border-[var(--border-strong)] bg-[var(--bg-elevated)] text-white cursor-pointer disabled:opacity-50"
+              >
+                {isSigningIn ? "Signing..." : "Sign In"}
+              </button>
+            )}
+          </div>
           {NAV_LINKS.map((link) => {
             const active = pathname === link.href;
             return (

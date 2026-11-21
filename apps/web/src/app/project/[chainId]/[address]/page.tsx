@@ -198,8 +198,8 @@ export default function ProjectDetailPage() {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-      {/* LEFT COLUMN (68% -> 8 cols) */}
-      <div className="lg:col-span-8 space-y-6">
+      {/* BLOCK 1: Header + Chart (Mobile: 1st, Desktop: Top-Left 8 cols) */}
+      <div className="lg:col-span-8 lg:col-start-1 lg:row-start-1 space-y-6">
         {/* Project Header */}
         <div className="rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-5 md:p-6">
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
@@ -315,7 +315,141 @@ export default function ProjectDetailPage() {
 
         {/* Interactive Candlestick Chart */}
         <PriceChart chainId={chainId} tokenAddress={address} symbol={project.symbol} />
+      </div>
 
+      {/* BLOCK 2: Trade Terminal + Curve + Trust + Vesting (Mobile: directly below Chart, Desktop: Sticky Right 4 cols) */}
+      <div className="lg:col-span-4 lg:col-start-9 lg:row-start-1 lg:row-span-2 space-y-5 lg:sticky lg:top-28">
+        <TradeTerminal
+          chainId={chainId}
+          tokenAddress={address}
+          symbol={project.symbol}
+          graduated={project.graduated}
+          curve={curveSnapshot}
+          onTradeSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: ["project", chainId, address] });
+            queryClient.invalidateQueries({ queryKey: ["candles", chainId, address] });
+            queryClient.invalidateQueries({ queryKey: ["trades", chainId, address] });
+          }}
+        />
+
+        {/* Bonding Curve Progress Card */}
+        <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-5">
+          <div className="flex items-center justify-between text-xs font-mono mb-2">
+            <span className="text-[var(--text-secondary)]">
+              {project.graduated ? "Graduated to DEX" : "Bonding Curve Progress"}
+            </span>
+            <span className="text-[var(--signal-emerald)] font-semibold">{progressPct}%</span>
+          </div>
+          <div className="h-1.5 w-full rounded-full bg-[var(--bg-elevated)] overflow-hidden">
+            <div
+              className="h-full rounded-full bg-[var(--signal-emerald)] transition-all duration-300"
+              style={{ width: `${Math.min(100, Number(progressPct))}%` }}
+            />
+          </div>
+          <div className="mt-3 flex justify-between text-xs font-mono text-[var(--text-muted)]">
+            <span>Raised: {formatEthValue(curveSnapshot.realEthReserve)} ETH</span>
+            <span>Target: {formatEthValue(curveSnapshot.graduationThreshold)} ETH</span>
+          </div>
+          <p className="mt-3 text-xs text-[var(--text-muted)] leading-relaxed">
+            When the target is reached, 98% of raised ETH + 200M reserved tokens automatically
+            graduate to permanently locked DEX liquidity.
+          </p>
+        </div>
+
+        {/* Trust & Safety Scanner Card */}
+        {projectRes?.trustReport && (
+          <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-5 space-y-3 text-xs">
+            <div className="flex items-center justify-between">
+              <span className="font-display font-semibold text-sm text-white">
+                Trust &amp; Safety Scan
+              </span>
+              <span
+                className={`px-2 py-0.5 rounded font-mono text-[10px] uppercase ${
+                  projectRes.trustReport.riskLevel === "low"
+                    ? "bg-emerald-500/12 text-emerald-400"
+                    : projectRes.trustReport.riskLevel === "elevated"
+                      ? "bg-rose-500/15 text-rose-300"
+                      : "bg-amber-500/15 text-amber-300"
+                }`}
+              >
+                {projectRes.trustReport.riskLevel} risk
+              </span>
+            </div>
+
+            <div className="space-y-1.5 font-mono tabular-nums pt-1 border-t border-[var(--border-subtle)]">
+              <div className="flex justify-between">
+                <span className="text-[var(--text-muted)]">Builder holds</span>
+                <span className="text-white">
+                  {projectRes.trustReport.builderHoldingPct.toFixed(2)}%
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-[var(--text-muted)]">Top 10 holders</span>
+                <span
+                  className={
+                    projectRes.trustReport.isConcentrated ? "text-rose-300" : "text-white"
+                  }
+                >
+                  {projectRes.trustReport.top10ConcentrationPct.toFixed(2)}%
+                </span>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-[var(--border-subtle)] grid grid-cols-2 gap-1.5 font-mono text-[11px]">
+              <span className="text-emerald-400">✓ Fixed 1B supply</span>
+              <span className="text-emerald-400">✓ No mint / tax</span>
+              <span
+                className={
+                  projectRes.trustReport.checks.liveAppVerified
+                    ? "text-emerald-400"
+                    : "text-[var(--text-muted)]"
+                }
+              >
+                {projectRes.trustReport.checks.liveAppVerified ? "✓" : "○"} Live app URL
+              </span>
+              <span
+                className={
+                  projectRes.trustReport.checks.githubVerified
+                    ? "text-emerald-400"
+                    : "text-[var(--text-muted)]"
+                }
+              >
+                {projectRes.trustReport.checks.githubVerified ? "✓" : "○"} GitHub repo
+              </span>
+              <span className={creatorLocked ? "text-emerald-400" : "text-[var(--text-muted)]"}>
+                {creatorLocked ? "✓" : "○"} Vesting lock
+              </span>
+            </div>
+          </div>
+        )}
+
+        {/* Creator Vesting Vault Card */}
+        <VestingVaultCard
+          chainId={chainId}
+          tokenAddress={address}
+          symbol={project.symbol}
+          creatorAddress={project.creatorAddress}
+          onCreatorLockedChange={setCreatorLocked}
+        />
+
+        {/* Builder Info Card */}
+        <div className="rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-5 space-y-2.5 text-xs">
+          <div className="font-display font-semibold text-sm text-white">Builder Stats</div>
+          <div className="flex justify-between font-mono">
+            <span className="text-[var(--text-muted)]">Builder Wallet</span>
+            <span className="text-white">{shortenAddress(project.creatorAddress, 5)}</span>
+          </div>
+          <div className="flex justify-between font-mono">
+            <span className="text-[var(--text-muted)]">Builder Fees Earned</span>
+            <span className="text-emerald-400 font-semibold">
+              {formatEthValue(project.totalCreatorFeeEth, 4)} ETH
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* BLOCK 3: Tabs (Mobile: below Trade/Vault, Desktop: Bottom-Left 8 cols) */}
+      <div className="lg:col-span-8 lg:col-start-1 lg:row-start-2">
         {/* Tabs */}
         <div className="rounded-2xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] overflow-hidden">
           <div className="flex items-center gap-1 px-3 pt-3 border-b border-[var(--border-subtle)] overflow-x-auto">
@@ -611,137 +745,6 @@ export default function ProjectDetailPage() {
                 )}
               </div>
             )}
-          </div>
-        </div>
-      </div>
-
-      {/* RIGHT STICKY SIDEBAR (32% -> 4 cols) */}
-      <div className="lg:col-span-4 space-y-5 lg:sticky lg:top-28">
-        <TradeTerminal
-          chainId={chainId}
-          tokenAddress={address}
-          symbol={project.symbol}
-          graduated={project.graduated}
-          curve={curveSnapshot}
-          onTradeSuccess={() => {
-            queryClient.invalidateQueries({ queryKey: ["project", chainId, address] });
-            queryClient.invalidateQueries({ queryKey: ["candles", chainId, address] });
-            queryClient.invalidateQueries({ queryKey: ["trades", chainId, address] });
-          }}
-        />
-
-        {/* Bonding Curve Progress Card */}
-        <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-5">
-          <div className="flex items-center justify-between text-xs font-mono mb-2">
-            <span className="text-[var(--text-secondary)]">
-              {project.graduated ? "Graduated to DEX" : "Bonding Curve Progress"}
-            </span>
-            <span className="text-[var(--signal-emerald)] font-semibold">{progressPct}%</span>
-          </div>
-          <div className="h-1.5 w-full rounded-full bg-[var(--bg-elevated)] overflow-hidden">
-            <div
-              className="h-full rounded-full bg-[var(--signal-emerald)] transition-all duration-300"
-              style={{ width: `${Math.min(100, Number(progressPct))}%` }}
-            />
-          </div>
-          <div className="mt-3 flex justify-between text-xs font-mono text-[var(--text-muted)]">
-            <span>Raised: {formatEthValue(curveSnapshot.realEthReserve)} ETH</span>
-            <span>Target: {formatEthValue(curveSnapshot.graduationThreshold)} ETH</span>
-          </div>
-          <p className="mt-3 text-xs text-[var(--text-muted)] leading-relaxed">
-            When the target is reached, 98% of raised ETH + 200M reserved tokens automatically
-            graduate to permanently locked DEX liquidity.
-          </p>
-        </div>
-
-        {/* Trust & Safety Scanner Card */}
-        {projectRes?.trustReport && (
-          <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-5 space-y-3 text-xs">
-            <div className="flex items-center justify-between">
-              <span className="font-display font-semibold text-sm text-white">
-                Trust &amp; Safety Scan
-              </span>
-              <span
-                className={`px-2 py-0.5 rounded font-mono text-[10px] uppercase ${
-                  projectRes.trustReport.riskLevel === "low"
-                    ? "bg-emerald-500/12 text-emerald-400"
-                    : projectRes.trustReport.riskLevel === "elevated"
-                      ? "bg-rose-500/15 text-rose-300"
-                      : "bg-amber-500/15 text-amber-300"
-                }`}
-              >
-                {projectRes.trustReport.riskLevel} risk
-              </span>
-            </div>
-
-            <div className="space-y-1.5 font-mono tabular-nums pt-1 border-t border-[var(--border-subtle)]">
-              <div className="flex justify-between">
-                <span className="text-[var(--text-muted)]">Builder holds</span>
-                <span className="text-white">
-                  {projectRes.trustReport.builderHoldingPct.toFixed(2)}%
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-[var(--text-muted)]">Top 10 holders</span>
-                <span
-                  className={
-                    projectRes.trustReport.isConcentrated ? "text-rose-300" : "text-white"
-                  }
-                >
-                  {projectRes.trustReport.top10ConcentrationPct.toFixed(2)}%
-                </span>
-              </div>
-            </div>
-
-            <div className="pt-2 border-t border-[var(--border-subtle)] grid grid-cols-2 gap-1.5 font-mono text-[11px]">
-              <span className="text-emerald-400">✓ Fixed 1B supply</span>
-              <span className="text-emerald-400">✓ No mint / tax</span>
-              <span
-                className={
-                  projectRes.trustReport.checks.liveAppVerified
-                    ? "text-emerald-400"
-                    : "text-[var(--text-muted)]"
-                }
-              >
-                {projectRes.trustReport.checks.liveAppVerified ? "✓" : "○"} Live app URL
-              </span>
-              <span
-                className={
-                  projectRes.trustReport.checks.githubVerified
-                    ? "text-emerald-400"
-                    : "text-[var(--text-muted)]"
-                }
-              >
-                {projectRes.trustReport.checks.githubVerified ? "✓" : "○"} GitHub repo
-              </span>
-              <span className={creatorLocked ? "text-emerald-400" : "text-[var(--text-muted)]"}>
-                {creatorLocked ? "✓" : "○"} Vesting lock
-              </span>
-            </div>
-          </div>
-        )}
-
-        {/* Creator Vesting Vault Card */}
-        <VestingVaultCard
-          chainId={chainId}
-          tokenAddress={address}
-          symbol={project.symbol}
-          creatorAddress={project.creatorAddress}
-          onCreatorLockedChange={setCreatorLocked}
-        />
-
-        {/* Builder Info Card */}
-        <div className="rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-5 space-y-2.5 text-xs">
-          <div className="font-display font-semibold text-sm text-white">Builder Stats</div>
-          <div className="flex justify-between font-mono">
-            <span className="text-[var(--text-muted)]">Builder Wallet</span>
-            <span className="text-white">{shortenAddress(project.creatorAddress, 5)}</span>
-          </div>
-          <div className="flex justify-between font-mono">
-            <span className="text-[var(--text-muted)]">Builder Fees Earned</span>
-            <span className="text-emerald-400 font-semibold">
-              {formatEthValue(project.totalCreatorFeeEth, 4)} ETH
-            </span>
           </div>
         </div>
       </div>
