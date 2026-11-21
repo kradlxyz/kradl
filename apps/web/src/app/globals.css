@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+:root {
+  /* Monochrome Luxury Carbon Neutrals */
+  --bg-canvas: #09090b;
+  --bg-surface: #111114;
+  --bg-elevated: #18181b;
+
+  --border-subtle: #232329;
+  --border-strong: #34343d;
+
+  /* Crisp White Primary CTA + Refined Emerald On-Chain Signal */
+  --accent-primary: #fafafa;
+  --accent-ink: #09090b;
+  --signal-emerald: #10b981;
+
+  /* Semantic Trading Colors */
+  --trade-buy: #10b981;
+  --trade-sell: #ef4444;
+  --status-warning: #f59e0b;
+
+  /* Text Hierarchy */
+  --text-primary: #fafafa;
+  --text-secondary: #a1a1aa;
+  --text-muted: #71717a;
+}
+
+@theme inline {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+html,
+body {
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes kradl-marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-kradl-ticker {
+  display: flex;
+  width: max-content;
+  animation: kradl-marquee 42s linear infinite;
+}
+
+.animate-kradl-ticker:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-kradl-ticker {
+    animation: none;
+  }
+}

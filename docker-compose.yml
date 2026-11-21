@@ -1,0 +1,71 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: kradl-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kradl}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-kradl_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-kradl}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - kradl_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kradl} -d ${POSTGRES_DB:-kradl}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    profiles: ["prod"]
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: kradl-web
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kradl}:${POSTGRES_PASSWORD:-kradl_dev_password}@postgres:5432/${POSTGRES_DB:-kradl}?schema=public
+    ports:
+      - "127.0.0.1:3000:3000"
+
+  indexer:
+    profiles: ["prod"]
+    build:
+      context: .
+      dockerfile: apps/indexer/Dockerfile
+    container_name: kradl-indexer
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-kradl}:${POSTGRES_PASSWORD:-kradl_dev_password}@postgres:5432/${POSTGRES_DB:-kradl}?schema=public
+
+  caddy:
+    profiles: ["prod"]
+    image: caddy:2-alpine
+    container_name: kradl-caddy
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - kradl_caddy_data:/data
+      - kradl_caddy_config:/config
+
+volumes:
+  kradl_pgdata:
+  kradl_caddy_data:
+  kradl_caddy_config:

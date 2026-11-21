@@ -1,0 +1,193 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  walletAddress String   @id // lowercase 0x...
+  displayName   String?
+  bio           String?
+  avatarUrl     String?
+  twitterHandle String?
+  githubHandle  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  projects      Project[]       @relation("CreatorProjects")
+  updates       ProjectUpdate[]
+  comments      Comment[]
+}
+
+model Project {
+  id                  String   @id @default(cuid())
+  chainId             Int
+  tokenAddress        String   // lowercase 0x...
+  creatorAddress      String   // lowercase 0x...
+  name                String
+  symbol              String
+  metadataUri         String   @default("")
+
+  // On-chain bonding curve state (stored as wei strings for full uint256 precision)
+  virtualEthReserve   String   @default("0")
+  virtualTokenReserve String   @default("0")
+  realEthReserve      String   @default("0")
+  realTokenReserve    String   @default("800000000000000000000000000")
+  graduationThreshold String   @default("5000000000000000000")
+  graduated           Boolean  @default(false)
+  liquidityPool       String?
+
+  // Derived display / sorting metrics (ETH float for fast SQL ORDER BY)
+  priceEth            Float    @default(0)
+  priceChange24h      Float    @default(0)
+  marketCapEth        Float    @default(0)
+  volume24hEth        Float    @default(0)
+  totalVolumeEth      Float    @default(0)
+  totalCreatorFeeEth  Float    @default(0)
+  holderCount         Int      @default(0)
+  tradeCount          Int      @default(0)
+
+  // Off-chain App Showcase metadata
+  tagline             String   @default("")
+  description         String   @default("")
+  category            String   @default("AI & Agents")
+  logoUrl             String?
+  bannerUrl           String?
+  screenshots         Json     @default("[]")
+  liveUrl             String?
+  githubUrl           String?
+  twitterUrl          String?
+  discordUrl          String?
+  isVerified          Boolean  @default(false)
+  verifiedSources     Json     @default("[]")
+  featuredRank        Int?
+
+  launchedAt          DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  creator             User            @relation("CreatorProjects", fields: [creatorAddress], references: [walletAddress])
+  trades              Trade[]
+  candles             Candle[]
+  holders             HolderBalance[]
+  updates             ProjectUpdate[]
+  comments            Comment[]
+
+  @@unique([chainId, tokenAddress])
+  @@index([chainId, graduated])
+  @@index([category])
+  @@index([marketCapEth(sort: Desc)])
+  @@index([volume24hEth(sort: Desc)])
+  @@index([launchedAt(sort: Desc)])
+}
+
+model Trade {
+  id            String   @id @default(cuid())
+  projectId     String
+  chainId       Int
+  tokenAddress  String
+  txHash        String
+  logIndex      Int
+  traderAddress String
+  isBuy         Boolean
+  ethAmount     String   // wei string
+  tokenAmount   String   // wei string
+  platformFee   String   // wei string
+  creatorFee    String   // wei string
+  priceEth      Float
+  blockNumber   BigInt
+  timestamp     DateTime
+
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([chainId, txHash, logIndex])
+  @@index([projectId, timestamp(sort: Desc)])
+  @@index([traderAddress])
+  @@index([timestamp(sort: Desc)])
+}
+
+model Candle {
+  id           String   @id @default(cuid())
+  projectId    String
+  chainId      Int
+  tokenAddress String
+  interval     String   // "1m" | "5m" | "15m" | "1h" | "1d"
+  bucketTime   DateTime
+  open         Float
+  high         Float
+  low          Float
+  close        Float
+  volumeEth    Float    @default(0)
+
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, interval, bucketTime])
+  @@index([projectId, interval, bucketTime(sort: Asc)])
+}
+
+model HolderBalance {
+  id            String   @id @default(cuid())
+  projectId     String
+  chainId       Int
+  tokenAddress  String
+  walletAddress String
+  balance       String   // wei string (BigInt exact)
+  updatedAt     DateTime @updatedAt
+
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, walletAddress])
+  @@index([walletAddress])
+}
+
+model ProjectUpdate {
+  id            String   @id @default(cuid())
+  projectId     String
+  authorAddress String
+  versionTag    String?
+  title         String
+  content       String
+  createdAt     DateTime @default(now())
+
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author        User     @relation(fields: [authorAddress], references: [walletAddress])
+
+  @@index([projectId, createdAt(sort: Desc)])
+}
+
+model Comment {
+  id            String   @id @default(cuid())
+  projectId     String
+  authorAddress String
+  content       String
+  parentId      String?
+  createdAt     DateTime @default(now())
+
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author        User     @relation(fields: [authorAddress], references: [walletAddress])
+
+  @@index([projectId, createdAt(sort: Desc)])
+}
+
+model AuthNonce {
+  nonce     String   @id
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model SyncState {
+  chainId         Int      @id
+  lastSyncedBlock BigInt   @default(0)
+  updatedAt       DateTime @updatedAt
+}
+
+model Referral {
+  id              String   @id @default(cuid())
+  referrerAddress String   // lowercase 0x...
+  refereeAddress  String   @unique // lowercase 0x... (immutable once bound)
+  createdAt       DateTime @default(now())
+
+  @@index([referrerAddress])
+}

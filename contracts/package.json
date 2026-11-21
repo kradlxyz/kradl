@@ -1,0 +1,26 @@
+{
+  "name": "@kradl/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy:local": "hardhat run scripts/deploy.ts --network localhost",
+    "deploy:rh-testnet": "hardhat run scripts/deploy.ts --network robinhoodTestnet",
+    "deploy:rh-mainnet": "hardhat run scripts/deploy.ts --network robinhoodMainnet",
+    "deploy:base-sepolia": "hardhat run scripts/deploy.ts --network baseSepolia",
+    "deploy:base-mainnet": "hardhat run scripts/deploy.ts --network baseMainnet",
+    "clean": "hardhat clean"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.2.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "dotenv": "^16.4.7",
+    "hardhat": "^2.22.19",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}

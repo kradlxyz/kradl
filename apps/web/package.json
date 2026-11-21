@@ -1,0 +1,39 @@
+{
+  "name": "@kradl/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "typecheck": "tsc --noEmit",
+    "test": "pnpm --filter @kradl/indexer exec tsx --test ../web/test/*.test.ts",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@kradl/shared": "workspace:*",
+    "@prisma/client": "^6.4.1",
+    "@rainbow-me/rainbowkit": "^2.2.4",
+    "@tanstack/react-query": "^5.66.0",
+    "jose": "^6.0.8",
+    "lightweight-charts": "^5.0.3",
+    "lucide-react": "^0.475.0",
+    "next": "^15.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "viem": "^2.23.5",
+    "wagmi": "^2.14.11",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.0.9",
+    "@types/node": "^22.13.5",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "prisma": "^6.4.1",
+    "tailwindcss": "^4.0.9",
+    "typescript": "^5.7.3"
+  }
+}

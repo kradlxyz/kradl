@@ -1,0 +1,23 @@
+{
+  "name": "kradl-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "contracts:compile": "pnpm --filter @kradl/contracts compile",
+    "contracts:test": "pnpm --filter @kradl/contracts test",
+    "contracts:node": "pnpm --filter @kradl/contracts node",
+    "contracts:deploy:local": "pnpm --filter @kradl/contracts deploy:local",
+    "shared:build": "pnpm --filter @kradl/shared build",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "db:generate": "pnpm --filter @kradl/web db:generate",
+    "db:push": "pnpm --filter @kradl/web db:push",
+    "web:dev": "pnpm --filter @kradl/web dev",
+    "web:build": "pnpm --filter @kradl/web build",
+    "indexer:dev": "pnpm --filter @kradl/indexer dev",
+    "shared:test": "pnpm --filter @kradl/shared test",
+    "web:test": "pnpm --filter @kradl/web test",
+    "test:all": "pnpm shared:test && pnpm web:test && pnpm contracts:test",
+    "typecheck": "pnpm --filter @kradl/shared typecheck && pnpm --filter @kradl/indexer typecheck && pnpm --filter @kradl/web typecheck"
+  }
+}

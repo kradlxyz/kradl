@@ -1,0 +1,16 @@
+{
+  "chainId": 46630,
+  "network": "robinhoodTestnet",
+  "launchpad": "0x2FEE1b921F68A19bFdA0B587dff8bC245727D518",
+  "deployedBlock": 155815386,
+  "virtualEthReserve": "50000000000000000",
+  "virtualTokenReserve": "1073000000000000000000000000",
+  "graduationThreshold": "150000000000000000",
+  "deployedAt": "2026-11-20T09:13:47.756Z",
+  "vestingVault": "0xD02a30af2430FD2CCE14987016819AeD4744d20f",
+  "vestingVaultDeployedBlock": 155845916,
+  "vestingVaultDeployedAt": "2026-11-20T11:28:16.703Z",
+  "merkleDistributor": "0xe66D459b6E4E5b70Cb6129f827869E3e5D38E60C",
+  "merkleDistributorDeployedBlock": 155863018,
+  "merkleDistributorDeployedAt": "2026-11-20T12:28:31.454Z"
+}
