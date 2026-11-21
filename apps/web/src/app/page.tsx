@@ -103,13 +103,6 @@ export default function ExplorePage() {
 
         <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-white/[0.04] border border-white/[0.09] text-[11px] font-mono text-[var(--text-secondary)] mb-5">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-white">Robinhood Chain · 4663</span>
-              <span className="text-[var(--text-muted)]">·</span>
-              <span>Mainnet Live</span>
-            </div>
-
             <h1 className="font-display font-bold text-4xl md:text-[52px] tracking-[-0.03em] leading-[1.04] text-white">
               Fund real apps from block one.
             </h1>
