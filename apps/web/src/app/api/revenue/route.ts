@@ -1,9 +1,17 @@
 import { NextResponse } from "next/server";
 import { formatEther } from "viem";
 import { prisma } from "@/lib/prisma";
+import { TtlCache } from "@/lib/rateLimit";
+
+const revenueCache = new TtlCache<Record<string, unknown>>(15_000);
 
 export async function GET() {
   try {
+    const cached = revenueCache.get();
+    if (cached) {
+      return NextResponse.json(cached);
+    }
+
     const [projectAgg, verifiedCount, totalTrades, recentTrades] = await Promise.all([
       prisma.project.aggregate({
         _count: { id: true },
@@ -53,7 +61,7 @@ export async function GET() {
 
     const totalBuilderFeesEth = projectAgg._sum.totalCreatorFeeEth ?? 0;
 
-    return NextResponse.json({
+    const payload = {
       summary: {
         totalProjects: projectAgg._count.id,
         verifiedProjects: verifiedCount,
@@ -77,7 +85,9 @@ export async function GET() {
         creatorFee: t.creatorFee,
         timestamp: t.timestamp,
       })),
-    });
+    };
+    revenueCache.set(payload);
+    return NextResponse.json(payload);
   } catch (error) {
     console.error("GET /api/revenue error:", error);
     return NextResponse.json({ error: "Failed to load protocol revenue" }, { status: 500 });

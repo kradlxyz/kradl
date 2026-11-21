@@ -2,8 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionAddress } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { validateReferralBinding } from "@/lib/rewards";
+import { getClientIp, globalRateLimiter } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
+  const rate = globalRateLimiter.check(`referral:${getClientIp(req)}`, 10, 60_000);
+  if (!rate.allowed) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment." },
+      { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } }
+    );
+  }
+
   const sessionAddress = await getSessionAddress();
   if (!sessionAddress) {
     return NextResponse.json({ error: "Please sign in with your wallet first." }, { status: 401 });

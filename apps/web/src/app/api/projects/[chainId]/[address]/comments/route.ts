@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSessionAddress } from "@/lib/auth";
+import { getClientIp, globalRateLimiter } from "@/lib/rateLimit";
 
 const createCommentSchema = z.object({
   content: z.string().trim().min(1).max(1500),
@@ -67,6 +68,14 @@ export async function POST(
     const sessionAddress = await getSessionAddress();
     if (!sessionAddress) {
       return NextResponse.json({ error: "Sign in with Ethereum required" }, { status: 401 });
+    }
+
+    const rate = globalRateLimiter.check(`comment:${getClientIp(req)}:${sessionAddress}`, 10, 60_000);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: "Too many comments. Please slow down." },
+        { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } }
+      );
     }
 
     const { chainId: chainIdStr, address } = await context.params;

@@ -5,93 +5,111 @@ import {
   isValidEthAddress,
   POINTS_CONFIG,
   WalletActivityInput,
+  WalletRewardSummary,
 } from "@/lib/rewards";
+import { TtlCache } from "@/lib/rateLimit";
+
+const rewardsSnapshotCache = new TtlCache<{
+  ranked: WalletRewardSummary[];
+  referrals: { referrerAddress: string; refereeAddress: string }[];
+  totalPointsDistributed: number;
+}>(15_000);
+
+async function getSeasonSnapshot() {
+  const cached = rewardsSnapshotCache.get();
+  if (cached) return cached;
+
+  const [projects, updates, trades, referrals] = await Promise.all([
+    prisma.project.findMany({
+      select: { id: true, creatorAddress: true, isVerified: true },
+    }),
+    prisma.projectUpdate.findMany({
+      select: { projectId: true, authorAddress: true },
+    }),
+    prisma.trade.findMany({
+      select: { projectId: true, traderAddress: true, ethAmount: true },
+    }),
+    prisma.referral.findMany({
+      select: { referrerAddress: true, refereeAddress: true },
+    }),
+  ]);
+
+  const walletMap = new Map<
+    string,
+    {
+      verifiedLaunches: number;
+      unverifiedLaunches: number;
+      updatesByProject: Map<string, number>;
+      totalVolumeWei: bigint;
+      projectsTraded: Set<string>;
+      tradeCount: number;
+    }
+  >();
+
+  function getOrCreate(wallet: string) {
+    const key = wallet.toLowerCase();
+    let entry = walletMap.get(key);
+    if (!entry) {
+      entry = {
+        verifiedLaunches: 0,
+        unverifiedLaunches: 0,
+        updatesByProject: new Map(),
+        totalVolumeWei: 0n,
+        projectsTraded: new Set(),
+        tradeCount: 0,
+      };
+      walletMap.set(key, entry);
+    }
+    return entry;
+  }
+
+  for (const p of projects) {
+    const entry = getOrCreate(p.creatorAddress);
+    if (p.isVerified) entry.verifiedLaunches += 1;
+    else entry.unverifiedLaunches += 1;
+  }
+
+  for (const u of updates) {
+    const entry = getOrCreate(u.authorAddress);
+    entry.updatesByProject.set(u.projectId, (entry.updatesByProject.get(u.projectId) ?? 0) + 1);
+  }
+
+  for (const t of trades) {
+    const entry = getOrCreate(t.traderAddress);
+    try {
+      entry.totalVolumeWei += BigInt(t.ethAmount || "0");
+    } catch {
+      // Ignore malformed legacy values
+    }
+    entry.projectsTraded.add(t.projectId);
+    entry.tradeCount += 1;
+  }
+
+  const activities: WalletActivityInput[] = Array.from(walletMap.entries()).map(
+    ([walletAddress, d]) => ({
+      walletAddress,
+      verifiedLaunches: d.verifiedLaunches,
+      unverifiedLaunches: d.unverifiedLaunches,
+      updatesPerProject: Array.from(d.updatesByProject.values()),
+      totalVolumeWei: d.totalVolumeWei,
+      uniqueProjectsTraded: d.projectsTraded.size,
+      tradeCount: d.tradeCount,
+    })
+  );
+
+  const ranked = computeSeasonRewards(activities, referrals);
+  const totalPointsDistributed = ranked.reduce((sum, r) => sum + r.totalPoints, 0);
+  const snapshot = { ranked, referrals, totalPointsDistributed };
+  rewardsSnapshotCache.set(snapshot);
+  return snapshot;
+}
 
 export async function GET(req: NextRequest) {
   try {
     const rawAddress = req.nextUrl.searchParams.get("address");
     const targetWallet = isValidEthAddress(rawAddress) ? rawAddress.trim().toLowerCase() : null;
 
-    const [projects, updates, trades, referrals] = await Promise.all([
-      prisma.project.findMany({
-        select: { id: true, creatorAddress: true, isVerified: true },
-      }),
-      prisma.projectUpdate.findMany({
-        select: { projectId: true, authorAddress: true },
-      }),
-      prisma.trade.findMany({
-        select: { projectId: true, traderAddress: true, ethAmount: true },
-      }),
-      prisma.referral.findMany({
-        select: { referrerAddress: true, refereeAddress: true },
-      }),
-    ]);
-
-    const walletMap = new Map<
-      string,
-      {
-        verifiedLaunches: number;
-        unverifiedLaunches: number;
-        updatesByProject: Map<string, number>;
-        totalVolumeWei: bigint;
-        projectsTraded: Set<string>;
-        tradeCount: number;
-      }
-    >();
-
-    function getOrCreate(wallet: string) {
-      const key = wallet.toLowerCase();
-      let entry = walletMap.get(key);
-      if (!entry) {
-        entry = {
-          verifiedLaunches: 0,
-          unverifiedLaunches: 0,
-          updatesByProject: new Map(),
-          totalVolumeWei: 0n,
-          projectsTraded: new Set(),
-          tradeCount: 0,
-        };
-        walletMap.set(key, entry);
-      }
-      return entry;
-    }
-
-    for (const p of projects) {
-      const entry = getOrCreate(p.creatorAddress);
-      if (p.isVerified) entry.verifiedLaunches += 1;
-      else entry.unverifiedLaunches += 1;
-    }
-
-    for (const u of updates) {
-      const entry = getOrCreate(u.authorAddress);
-      entry.updatesByProject.set(u.projectId, (entry.updatesByProject.get(u.projectId) ?? 0) + 1);
-    }
-
-    for (const t of trades) {
-      const entry = getOrCreate(t.traderAddress);
-      try {
-        entry.totalVolumeWei += BigInt(t.ethAmount || "0");
-      } catch {
-        // Ignore malformed legacy values
-      }
-      entry.projectsTraded.add(t.projectId);
-      entry.tradeCount += 1;
-    }
-
-    const activities: WalletActivityInput[] = Array.from(walletMap.entries()).map(
-      ([walletAddress, d]) => ({
-        walletAddress,
-        verifiedLaunches: d.verifiedLaunches,
-        unverifiedLaunches: d.unverifiedLaunches,
-        updatesPerProject: Array.from(d.updatesByProject.values()),
-        totalVolumeWei: d.totalVolumeWei,
-        uniqueProjectsTraded: d.projectsTraded.size,
-        tradeCount: d.tradeCount,
-      })
-    );
-
-    const ranked = computeSeasonRewards(activities, referrals);
-    const totalPointsDistributed = ranked.reduce((sum, r) => sum + r.totalPoints, 0);
+    const { ranked, referrals, totalPointsDistributed } = await getSeasonSnapshot();
 
     let walletData = null;
     if (targetWallet) {

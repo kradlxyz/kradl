@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSessionAddress } from "@/lib/auth";
+import { getClientIp, globalRateLimiter } from "@/lib/rateLimit";
 
 const createUpdateSchema = z.object({
   versionTag: z.string().trim().max(24).optional(),
@@ -51,6 +52,14 @@ export async function POST(
     const sessionAddress = await getSessionAddress();
     if (!sessionAddress) {
       return NextResponse.json({ error: "Sign in with Ethereum required" }, { status: 401 });
+    }
+
+    const rate = globalRateLimiter.check(`update:${getClientIp(req)}:${sessionAddress}`, 10, 60_000);
+    if (!rate.allowed) {
+      return NextResponse.json(
+        { error: "Too many updates published. Please wait a minute." },
+        { status: 429, headers: { "Retry-After": String(rate.retryAfterSec) } }
+      );
     }
 
     const { chainId: chainIdStr, address } = await context.params;
