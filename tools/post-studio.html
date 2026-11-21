@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kradl · Editorial X Post Card Studio (1600×900 PNG)</title>
+  <style>
+    :root {
+      --ui-bg: #09090b;
+      --ui-surface: #111114;
+      --ui-border: #27272a;
+      --ui-text: #fafafa;
+      --ui-muted: #a1a1aa;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--ui-bg);
+      color: var(--ui-text);
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      min-height: 100vh;
+    }
+    @media (max-width: 960px) {
+      body { grid-template-columns: 1fr; }
+    }
+    aside {
+      background: var(--ui-surface);
+      border-right: 1px solid var(--ui-border);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow-y: auto;
+    }
+    h1 { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+    .sub { font-size: 12px; color: var(--ui-muted); margin-top: 2px; }
+    label { display: block; font-size: 11px; font-family: ui-monospace, monospace; color: var(--ui-muted); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 5px; }
+    input, textarea, select {
+      width: 100%;
+      background: #18181b;
+      color: #fafafa;
+      border: 1px solid var(--ui-border);
+      border-radius: 7px;
+      padding: 8px 10px;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+    }
+    select option { background: #111114; color: #fafafa; }
+    textarea { resize: vertical; min-height: 62px; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .btn {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+    .btn-primary { background: #fafafa; color: #09090b; }
+    .btn-primary:hover { opacity: 0.92; }
+    .btn-ghost { background: #18181b; color: #fafafa; border-color: var(--ui-border); }
+    .btn-ghost:hover { border-color: #52525b; }
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      gap: 16px;
+    }
+    .preview-wrap {
+      width: 100%;
+      max-width: 960px;
+      aspect-ratio: 16 / 9;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--ui-border);
+      background: #000;
+    }
+    canvas { width: 100%; height: 100%; display: block; }
+    .hint { font-size: 12px; color: var(--ui-muted); font-family: ui-monospace, monospace; }
+  </style>
+</head>
+<body>
+  <aside>
+    <div>
+      <h1>Kradl Post Studio</h1>
+      <div class="sub">Swiss Editorial X Card Generator · 1600×900 PNG</div>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Template</label>
+        <select id="template">
+          <option value="launch">1. Tool / Product Launch</option>
+          <option value="milestone">2. Milestone / Split-Flap</option>
+          <option value="compare">3. Comparison / Thesis</option>
+          <option value="spotlight">4. Builder Spotlight</option>
+        </select>
+      </div>
+      <div>
+        <label>Theme</label>
+        <select id="theme">
+          <option value="light">Swiss Light (Gloam)</option>
+          <option value="dark">Obsidian Dark (Kradl)</option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label>Headline (Line 1)</label>
+      <input id="h1" value="Vigil Scanner" />
+    </div>
+    <div>
+      <label>Headline Accent (Line 2)</label>
+      <input id="h2" value="Now Live." />
+    </div>
+    <div>
+      <label>Body Copy</label>
+      <textarea id="body">2-second on-chain contract, proxy & bytecode safety audit for Base (8453) and Robinhood Chain (4663). Free web app, REST API & @KradlVigilBot.</textarea>
+    </div>
+
+    <div class="row">
+      <div>
+        <label>Right Panel Tag</label>
+        <input id="rightTag" value="LIVE ON-CHAIN AUDIT" />
+      </div>
+      <div>
+        <label>Right Hero Word / Score</label>
+        <input id="rightHero" value="VERIFIED" />
+      </div>
+    </div>
+
+    <div>
+      <label>Right Panel Lines (1 per line, max 4)</label>
+      <textarea id="rightLines">Sourcify v2 exact_match · PASS
+EIP-1967 / EIP-1167 Proxy · IMMUTABLE
+PUSH4 Risk Selectors · 0 DETECTED
+Safety Score · 100/100 LOW RISK</textarea>
+    </div>
+
+    <div>
+      <label>Footer Left</label>
+      <input id="footerLeft" value="scan.kradl.xyz · t.me/KradlVigilBot" />
+    </div>
+    <div>
+      <label>Footer Right</label>
+      <input id="footerRight" value="Base (8453) · Robinhood Chain (4663)" />
+    </div>
+
+    <button id="downloadBtn" class="btn btn-primary">Download 1600×900 PNG</button>
+    <button id="presetBtn" class="btn btn-ghost">Load Template Preset</button>
+  </aside>
+
+  <main>
+    <div class="preview-wrap">
+      <canvas id="canvas" width="1600" height="900"></canvas>
+    </div>
+    <div class="hint">1600 × 900 px · 16:9 X Optimized · Zero AI Slop · Pure Vector Canvas</div>
+  </main>
+
+  <script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const PRESETS = {
+      launch: {
+        h1: "Vigil Scanner",
+        h2: "Now Live.",
+        body: "2-second on-chain contract, proxy & bytecode safety audit for Base (8453) and Robinhood Chain (4663). Free web app, REST API & @KradlVigilBot.",
+        rightTag: "LIVE ON-CHAIN AUDIT",
+        rightHero: "100/100",
+        rightLines: "Sourcify v2 exact_match · PASS\nEIP-1967 / EIP-1167 Proxy · IMMUTABLE\nPUSH4 Risk Selectors · 0 DETECTED\nREST API & Telegram Bot · ONLINE",
+        footerLeft: "scan.kradl.xyz · t.me/KradlVigilBot",
+        footerRight: "Base (8453) · Robinhood Chain (4663)"
+      },
+      milestone: {
+        h1: "Dual-Chain",
+        h2: "Mainnet Live.",
+        body: "Unified deterministic contracts deployed & exact_match verified across Robinhood Chain (4663) and Base Mainnet (8453).",
+        rightTag: "ON-CHAIN STATUS",
+        rightHero: "VERIFIED",
+        rightLines: "Phase 1 · Testnet Verified\nPhase 2 · Robinhood 4663 Live\nPhase 3 · Base 8453 Live\nPhase 4 · Season 1 Rewards Active",
+        footerLeft: "All contracts verified on Sourcify & Blockscout",
+        footerRight: "kradl.xyz/litepaper"
+      },
+      compare: {
+        h1: "Built for Apps,",
+        h2: "Not Casinos.",
+        body: "V1 meme launchpads optimize for 48-hour charts. Kradl is built for real Web2 & Web3 software with continuous ETH builder fees.",
+        rightTag: "PROTOCOL GUARANTEES",
+        rightHero: "0% TAX",
+        rightLines: "Token Tax · 0% Forever\nBuilder Fee · 0.5% ETH (Zero Clawback)\nDEX Graduation · Auto + Permanent LP Burn\nAnti-Rug · On-Chain KradlVestingVault",
+        footerLeft: "Read the full Litepaper at kradl.xyz/litepaper",
+        footerRight: "kradl.xyz"
+      },
+      spotlight: {
+        h1: "App Spotlight:",
+        h2: "$VIGIL",
+        body: "First utility app launched on Base Mainnet via Kradl. Live web scanner, open-source repo, and public Telegram Bot.",
+        rightTag: "VERIFIED BUILDER",
+        rightHero: "BASE 8453",
+        rightLines: "Live App · scan.kradl.xyz\nGitHub · github.com/kradlxyz/vigil\nContract Audit · 100/100 LOW RISK\nSupply · 1B Fixed · 0% Tax",
+        footerLeft: "Trade & verify on kradl.xyz",
+        footerRight: "Launch your app in 60s · kradl.xyz/launch"
+      }
+    };
+
+    const ids = ["template", "theme", "h1", "h2", "body", "rightTag", "rightHero", "rightLines", "footerLeft", "footerRight"];
+    const el = Object.fromEntries(ids.map(id => [id, document.getElementById(id)]));
+
+    function roundRect(c, x, y, w, h, r) {
+      c.beginPath();
+      c.moveTo(x + r, y);
+      c.arcTo(x + w, y, x + w, y + h, r);
+      c.arcTo(x + w, y + h, x, y + h, r);
+      c.arcTo(x, y + h, x, y, r);
+      c.arcTo(x, y, x + w, y, r);
+      c.closePath();
+    }
+
+    function wrapText(c, text, x, y, maxW, lineH) {
+      const words = text.split(/\s+/);
+      let line = "";
+      let cy = y;
+      for (const w of words) {
+        const test = line ? line + " " + w : w;
+        if (c.measureText(test).width > maxW && line) {
+          c.fillText(line, x, cy);
+          line = w;
+          cy += lineH;
+        } else {
+          line = test;
+        }
+      }
+      if (line) c.fillText(line, x, cy);
+    }
+
+    function draw() {
+      const isLight = el.theme.value === "light";
+      const tpl = el.template.value;
+
+      const P = isLight
+        ? {
+            bg: "#f8f9fa",
+            surface: "#ffffff",
+            elevated: "#f1f3f5",
+            border: "#e4e4e7",
+            ink: "#09090b",
+            muted: "#52525b",
+            dim: "#71717a",
+            accent: "#059669",
+            accentBg: "rgba(5, 150, 105, 0.10)",
+            tileBg: "#111114",
+            tileText: "#fafafa",
+          }
+        : {
+            bg: "#09090b",
+            surface: "#111114",
+            elevated: "#18181b",
+            border: "#27272a",
+            ink: "#fafafa",
+            muted: "#a1a1aa",
+            dim: "#71717a",
+            accent: "#10b981",
+            accentBg: "rgba(16, 185, 129, 0.12)",
+            tileBg: "#18181b",
+            tileText: "#fafafa",
+          };
+
+      // Canvas background (clean matte, zero AI slop)
+      ctx.fillStyle = P.bg;
+      ctx.fillRect(0, 0, 1600, 900);
+
+      // Subtle architectural hairline frame
+      ctx.strokeStyle = P.border;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(40, 40, 1520, 820);
+
+      // Top-left Kradl brand mark
+      roundRect(ctx, 96, 92, 46, 46, 10);
+      ctx.fillStyle = isLight ? "#09090b" : "#fafafa";
+      ctx.fill();
+      ctx.fillStyle = isLight ? "#fafafa" : "#09090b";
+      ctx.font = "700 26px ui-monospace, SFMono-Regular, Menlo, monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("K", 119, 116);
+
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = P.ink;
+      ctx.font = "700 28px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+      ctx.fillText("Kradl", 158, 116);
+
+      // Top-right subtle status dot
+      ctx.fillStyle = P.accent;
+      ctx.beginPath();
+      ctx.arc(1366, 115, 6, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = P.muted;
+      ctx.font = "500 18px ui-monospace, SFMono-Regular, Menlo, monospace";
+      ctx.fillText("MAINNET LIVE", 1384, 116);
+
+      // Left column: Editorial Headline + Body
+      ctx.textBaseline = "alphabetic";
+      ctx.fillStyle = P.ink;
+      ctx.font = "600 84px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+      ctx.fillText(el.h1.value, 96, 360);
+
+      ctx.fillStyle = P.accent;
+      ctx.font = "600 84px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+      ctx.fillText(el.h2.value, 96, 456);
+
+      ctx.fillStyle = P.muted;
+      ctx.font = "400 26px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+      wrapText(ctx, el.body.value, 96, 526, 610, 39);
+
+      // Right column: Clean Modular Visual Card
+      const rx = 770, ry = 195, rw = 734, rh = 525;
+      roundRect(ctx, rx, ry, rw, rh, 18);
+      ctx.fillStyle = P.surface;
+      ctx.fill();
+      ctx.strokeStyle = P.border;
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Right tag
+      ctx.fillStyle = P.dim;
+      ctx.font = "600 17px ui-monospace, SFMono-Regular, Menlo, monospace";
+      ctx.fillText(el.rightTag.value.toUpperCase(), rx + 42, ry + 56);
+
+      // Split-flap tiles for Milestone / or crisp hero badge
+      const hero = el.rightHero.value.trim();
+      if (tpl === "milestone" && hero.length <= 10) {
+        const chars = hero.toUpperCase().split("");
+        const gap = 10;
+        const tileW = Math.min(72, Math.floor((rw - 84 - gap * (chars.length - 1)) / chars.length));
+        const tileH = 92;
+        chars.forEach((ch, idx) => {
+          const tx = rx + 42 + idx * (tileW + gap);
+          const ty = ry + 84;
+          const isLast = idx === chars.length - 1;
+          roundRect(ctx, tx, ty, tileW, tileH, 10);
+          ctx.fillStyle = isLast ? P.accent : P.tileBg;
+          ctx.fill();
+          ctx.fillStyle = isLast ? "#ffffff" : P.tileText;
+          ctx.font = "700 44px ui-monospace, SFMono-Regular, Menlo, monospace";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(ch, tx + tileW / 2, ty + tileH / 2 + 2);
+        });
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
+      } else {
+        roundRect(ctx, rx + 42, ry + 82, rw - 84, 96, 12);
+        ctx.fillStyle = P.accentBg;
+        ctx.fill();
+        ctx.strokeStyle = P.accent;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = P.accent;
+        ctx.font = "700 48px ui-monospace, SFMono-Regular, Menlo, monospace";
+        ctx.textBaseline = "middle";
+        ctx.fillText(hero, rx + 70, ry + 132);
+        ctx.textBaseline = "alphabetic";
+      }
+
+      // Structured rows inside right panel
+      const lines = el.rightLines.value.split("\n").map(s => s.trim()).filter(Boolean).slice(0, 4);
+      lines.forEach((line, idx) => {
+        const ly = ry + 216 + idx * 68;
+        roundRect(ctx, rx + 42, ly, rw - 84, 54, 10);
+        ctx.fillStyle = P.elevated;
+        ctx.fill();
+        ctx.strokeStyle = P.border;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        const parts = line.split("·");
+        const left = (parts[0] || "").trim();
+        const right = (parts[1] || "").trim();
+
+        // Status dot
+        ctx.fillStyle = P.accent;
+        ctx.beginPath();
+        ctx.arc(rx + 66, ly + 27, 5, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = P.ink;
+        ctx.font = "500 20px -apple-system, BlinkMacSystemFont, Inter, sans-serif";
+        ctx.textBaseline = "middle";
+        ctx.fillText(left, rx + 84, ly + 28);
+
+        if (right) {
+          ctx.textAlign = "right";
+          ctx.fillStyle = P.accent;
+          ctx.font = "600 18px ui-monospace, SFMono-Regular, Menlo, monospace";
+          ctx.fillText(right, rx + rw - 64, ly + 28);
+          ctx.textAlign = "left";
+        }
+        ctx.textBaseline = "alphabetic";
+      });
+
+      // Bottom hairline & footer
+      ctx.strokeStyle = P.border;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(96, 780);
+      ctx.lineTo(1504, 780);
+      ctx.stroke();
+
+      ctx.fillStyle = P.dim;
+      ctx.font = "500 18px ui-monospace, SFMono-Regular, Menlo, monospace";
+      ctx.fillText(el.footerLeft.value, 96, 822);
+      ctx.textAlign = "right";
+      ctx.fillText(el.footerRight.value, 1504, 822);
+      ctx.textAlign = "left";
+    }
+
+    el.presetBtn.addEventListener("click", () => {
+      const p = PRESETS[el.template.value];
+      Object.entries(p).forEach(([k, v]) => { el[k].value = v; });
+      draw();
+    });
+
+    el.template.addEventListener("change", () => {
+      const p = PRESETS[el.template.value];
+      Object.entries(p).forEach(([k, v]) => { el[k].value = v; });
+      draw();
+    });
+
+    ids.forEach(id => el[id].addEventListener("input", draw));
+
+    document.getElementById("downloadBtn").addEventListener("click", () => {
+      const a = document.createElement("a");
+      const slug = (el.h1.value || "kradl-card").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      a.download = `kradl-${slug}-${el.theme.value}.png`;
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+    });
+
+    draw();
+  </script>
+</body>
+</html>
