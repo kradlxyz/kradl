@@ -68,11 +68,7 @@ export default function LeaderboardPage() {
         </div>
       </div>
 
-      <div className="relative overflow-hidden rounded-xl bg-[var(--bg-surface)] border border-white/[0.08] overflow-x-auto">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent"
-        />
+      <div className="rounded-lg bg-[var(--bg-surface)] border border-[var(--border-subtle)] overflow-x-auto">
         {tab === "projects" ? (
           <table className="w-full text-left border-collapse">
             <thead>

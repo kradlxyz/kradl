@@ -93,22 +93,8 @@ export function ProjectCard({ project }: { project: ProjectCardData }) {
   return (
     <Link
       href={`/project/${project.chainId}/${project.tokenAddress}`}
-      className="group relative overflow-hidden flex flex-col justify-between rounded-xl bg-[var(--bg-surface)] border border-white/[0.08] hover:border-white/[0.18] hover:-translate-y-0.5 p-5 transition-all duration-200"
+      className="group flex flex-col justify-between rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] hover:border-[var(--border-strong)] p-5 transition-colors"
     >
-      {/* Top specular hairline */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent opacity-70 group-hover:opacity-100 transition-opacity"
-      />
-      {project.isVerified && (
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-12 -right-12 w-32 h-32 rounded-full blur-2xl opacity-50 group-hover:opacity-80 transition-opacity"
-          style={{
-            background: "radial-gradient(circle, rgba(16,185,129,0.16) 0%, transparent 70%)",
-          }}
-        />
-      )}
       <div>
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">

@@ -76,32 +76,9 @@ export default function ExplorePage() {
 
   return (
     <div className="space-y-10">
-      {/* Architectural Hero with subtle dot-grid backdrop + frameless kinetic ASCII K emblem */}
-      <section className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[var(--bg-surface)]/70 p-6 sm:p-9">
-        {/* Specular top hairline */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
-        />
-        {/* Subtle dot-grid architectural canvas */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 opacity-45"
-          style={{
-            backgroundImage: "radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
-          }}
-        />
-        {/* Restrained emerald corner depth */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full blur-3xl"
-          style={{
-            background: "radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)",
-          }}
-        />
-
-        <div className="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+      {/* Pure Monochrome Editorial Hero — zero blur orbs, zero dot-grid, zero gradients */}
+      <section className="border-b border-[var(--border-subtle)] pb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-7">
             <h1 className="font-display font-bold text-4xl md:text-[52px] tracking-[-0.03em] leading-[1.04] text-white">
               Fund real apps from block one.
@@ -120,7 +97,7 @@ export default function ExplorePage() {
               </Link>
               <Link
                 href="/leaderboard"
-                className="px-5 py-2.5 rounded-lg font-medium text-sm bg-white/[0.04] text-[var(--text-primary)] border border-white/[0.12] hover:bg-white/[0.08] transition-colors"
+                className="px-5 py-2.5 rounded-lg font-medium text-sm bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-strong)] hover:bg-[var(--bg-elevated)] transition-colors"
               >
                 Leaderboard
               </Link>
@@ -133,7 +110,7 @@ export default function ExplorePage() {
         </div>
 
         {/* Hairline 5-Column Protocol Telemetry Strip */}
-        <div className="relative mt-8 pt-5 border-t border-white/[0.08] grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 font-mono tabular-nums">
+        <div className="mt-8 pt-5 border-t border-[var(--border-subtle)] grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 font-mono tabular-nums">
           <div>
             <div className="text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
               Token Supply
