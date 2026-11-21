@@ -28,6 +28,7 @@ import { PriceChart } from "@/components/PriceChart";
 import { TradeTerminal } from "@/components/TradeTerminal";
 import { EditProjectModal } from "@/components/EditProjectModal";
 import { VestingVaultCard } from "@/components/VestingVaultCard";
+import { MarketActivityCard } from "@/components/MarketActivityCard";
 import { useKradlAuth } from "@/components/Providers";
 import { formatEthValue, formatTokenAmount, shortenAddress, timeAgo } from "@/lib/format";
 
@@ -332,6 +333,16 @@ export default function ProjectDetailPage() {
           }}
         />
 
+        {/* Multi-Timeframe Market Activity & 10-Point Contract Security */}
+        <MarketActivityCard
+          chainId={chainId}
+          tokenAddress={address}
+          liquidityPool={project.liquidityPool}
+          graduated={project.graduated}
+          activityStats={projectRes?.activityStats}
+          explorerUrl={explorerAddressUrl}
+        />
+
         {/* Bonding Curve Progress Card */}
         <div className="rounded-xl bg-[var(--bg-surface)] border border-[var(--border-subtle)] p-5">
           <div className="flex items-center justify-between text-xs font-mono mb-2">
@@ -458,7 +469,7 @@ export default function ProjectDetailPage() {
               { id: "updates", label: `Updates (${project._count?.updates ?? 0})`, icon: Sparkles },
               {
                 id: "discussion",
-                label: `Discussion (${project._count?.comments ?? 0})`,
+                label: `Calls (${project._count?.comments ?? 0})`,
                 icon: MessageSquare,
               },
               { id: "trades", label: `Trades (${project._count?.trades ?? 0})`, icon: ArrowUpDown },
@@ -609,24 +620,36 @@ export default function ProjectDetailPage() {
                         createdAt: string;
                         isCreator: boolean;
                         isHolder: boolean;
+                        hasBought?: boolean;
+                        mcapAtPostEth?: number | null;
                       }) => (
                         <div
                           key={c.id}
                           className="p-3.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)]"
                         >
-                          <div className="flex items-center justify-between text-xs font-mono mb-1.5">
-                            <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-mono mb-1.5">
+                            <div className="flex flex-wrap items-center gap-1.5">
                               <span className="text-white">
                                 {shortenAddress(c.authorAddress, 4)}
                               </span>
                               {c.isCreator && (
-                                <span className="px-1.5 py-0.5 rounded bg-[var(--accent-secondary)]/20 text-indigo-300 text-[10px]">
+                                <span className="px-1.5 py-0.5 rounded bg-white/15 text-white text-[10px]">
                                   BUILDER
                                 </span>
                               )}
+                              {c.hasBought && (
+                                <span className="px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-[10px]">
+                                  BOUGHT
+                                </span>
+                              )}
                               {c.isHolder && (
-                                <span className="px-1.5 py-0.5 rounded bg-[var(--accent-primary)]/15 text-[var(--accent-primary)] text-[10px]">
+                                <span className="px-1.5 py-0.5 rounded bg-zinc-700/70 text-zinc-200 text-[10px]">
                                   HOLDER
+                                </span>
+                              )}
+                              {typeof c.mcapAtPostEth === "number" && c.mcapAtPostEth > 0 && (
+                                <span className="text-[10px] text-[var(--text-muted)]">
+                                  · {formatEthValue(c.mcapAtPostEth, 3)} ETH MC
                                 </span>
                               )}
                             </div>

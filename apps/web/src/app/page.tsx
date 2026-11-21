@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { PROJECT_CATEGORIES } from "@kradl/shared";
 import { ProjectCard, ProjectCardData } from "@/components/ProjectCard";
+import { AsciiOrbitArt } from "@/components/AsciiOrbitArt";
 import { formatEthValue } from "@/lib/format";
 
 interface ProjectsResponse {
@@ -60,7 +61,7 @@ export default function ExplorePage() {
     <div className="space-y-10">
       {/* Editorial Asymmetric Market Header — zero blur orbs, zero eyebrow pill, zero gradient text */}
       <section className="border-b border-[var(--border-subtle)] pb-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-8">
             <h1 className="font-display font-bold text-4xl md:text-[52px] tracking-[-0.03em] leading-[1.04] text-white">
               Fund real apps from block one.
@@ -70,21 +71,24 @@ export default function ExplorePage() {
               Every buy and sell routes 0.5% in ETH directly to the developer, with automatic DEX
               graduation once the curve fills.
             </p>
+            <div className="mt-6 flex flex-wrap items-center gap-3">
+              <Link
+                href="/launch"
+                className="px-5 py-2.5 rounded-lg font-semibold text-sm bg-[var(--accent-primary)] text-[var(--accent-ink)] hover:bg-zinc-200 transition-colors"
+              >
+                Launch an app
+              </Link>
+              <Link
+                href="/litepaper"
+                className="px-5 py-2.5 rounded-lg font-medium text-sm bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-strong)] hover:bg-[var(--bg-elevated)] transition-colors"
+              >
+                Read Litepaper
+              </Link>
+            </div>
           </div>
 
-          <div className="lg:col-span-4 flex flex-wrap lg:justify-end gap-3">
-            <Link
-              href="/launch"
-              className="px-5 py-2.5 rounded-lg font-semibold text-sm bg-[var(--accent-primary)] text-[var(--accent-ink)] hover:bg-zinc-200 transition-colors"
-            >
-              Launch an app
-            </Link>
-            <Link
-              href="/leaderboard"
-              className="px-5 py-2.5 rounded-lg font-medium text-sm bg-[var(--bg-surface)] text-[var(--text-primary)] border border-[var(--border-strong)] hover:bg-[var(--bg-elevated)] transition-colors"
-            >
-              Leaderboard
-            </Link>
+          <div className="hidden lg:flex lg:col-span-4 justify-end">
+            <AsciiOrbitArt />
           </div>
         </div>
 

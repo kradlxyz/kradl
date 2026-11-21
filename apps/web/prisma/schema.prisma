@@ -163,6 +163,7 @@ model Comment {
   authorAddress String
   content       String
   parentId      String?
+  mcapAtPostEth Float?
   createdAt     DateTime @default(now())
 
   project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)

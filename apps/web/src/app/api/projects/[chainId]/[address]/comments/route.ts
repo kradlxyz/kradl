@@ -22,13 +22,13 @@ export async function GET(
 
     const project = await prisma.project.findUnique({
       where: { chainId_tokenAddress: { chainId, tokenAddress: address.toLowerCase() } },
-      select: { id: true, creatorAddress: true },
+      select: { id: true, creatorAddress: true, marketCapEth: true },
     });
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
     }
 
-    const [comments, holders] = await Promise.all([
+    const [comments, holders, buyers] = await Promise.all([
       prisma.comment.findMany({
         where: { projectId: project.id },
         orderBy: { createdAt: "desc" },
@@ -41,17 +41,24 @@ export async function GET(
         where: { projectId: project.id },
         select: { walletAddress: true, balance: true },
       }),
+      prisma.trade.findMany({
+        where: { projectId: project.id, isBuy: true },
+        select: { traderAddress: true },
+        distinct: ["traderAddress"],
+      }),
     ]);
 
     const holderSet = new Set(
       holders.filter((h) => BigInt(h.balance) > 0n).map((h) => h.walletAddress)
     );
+    const buyerSet = new Set(buyers.map((b) => b.traderAddress.toLowerCase()));
 
     return NextResponse.json({
       comments: comments.map((c) => ({
         ...c,
         isCreator: c.authorAddress === project.creatorAddress,
         isHolder: holderSet.has(c.authorAddress),
+        hasBought: buyerSet.has(c.authorAddress.toLowerCase()),
       })),
     });
   } catch (error) {
@@ -86,7 +93,7 @@ export async function POST(
 
     const project = await prisma.project.findUnique({
       where: { chainId_tokenAddress: { chainId, tokenAddress: address.toLowerCase() } },
-      select: { id: true, creatorAddress: true },
+      select: { id: true, creatorAddress: true, marketCapEth: true },
     });
     if (!project) {
       return NextResponse.json({ error: "Project not found" }, { status: 404 });
@@ -104,6 +111,7 @@ export async function POST(
         authorAddress: sessionAddress,
         content: parsed.data.content,
         parentId: parsed.data.parentId || null,
+        mcapAtPostEth: project.marketCapEth || null,
       },
       include: {
         author: { select: { walletAddress: true, displayName: true, avatarUrl: true } },
