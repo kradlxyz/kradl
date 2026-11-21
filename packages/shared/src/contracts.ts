@@ -11,6 +11,12 @@ export const DEFAULT_DEPLOYED_CONTRACTS: DeployedContractsMap = {
     merkleDistributor: "0xd352961fc0b140F73142FF8EB20B59c077d6e8bF",
     deployedBlock: 119616143,
   },
+  8453: {
+    launchpad: "0x2FEE1b921F68A19bFdA0B587dff8bC245727D518",
+    vestingVault: "0x94DD22D82Ae5f4370BCEBF97F94A505D413a70F5",
+    merkleDistributor: "0xd352961fc0b140F73142FF8EB20B59c077d6e8bF",
+    deployedBlock: 60259729,
+  },
   46630: {
     launchpad: "0x2FEE1b921F68A19bFdA0B587dff8bC245727D518",
     vestingVault: "0xD02a30af2430FD2CCE14987016819AeD4744d20f",

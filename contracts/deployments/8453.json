@@ -1,0 +1,13 @@
+{
+  "chainId": 8453,
+  "network": "baseMainnet",
+  "launchpad": "0x2FEE1b921F68A19bFdA0B587dff8bC245727D518",
+  "uniswapV2Migrator": "0xD02a30af2430FD2CCE14987016819AeD4744d20f",
+  "vestingVault": "0x94DD22D82Ae5f4370BCEBF97F94A505D413a70F5",
+  "merkleDistributor": "0xd352961fc0b140F73142FF8EB20B59c077d6e8bF",
+  "deployedBlock": 60259729,
+  "virtualEthReserve": "1000000000000000000",
+  "virtualTokenReserve": "1073000000000000000000000000",
+  "graduationThreshold": "3000000000000000000",
+  "deployedAt": "2026-11-21T06:25:30.937Z"
+}

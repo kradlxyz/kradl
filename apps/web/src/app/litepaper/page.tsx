@@ -392,8 +392,9 @@ export default function LitepaperPage() {
             <table className="w-full text-left text-xs font-mono">
               <thead>
                 <tr className="text-[var(--text-muted)] border-b border-[var(--border-subtle)]">
-                  <th className="py-2.5 px-4">Contract (Robinhood Mainnet 4663)</th>
-                  <th className="py-2.5 px-4">Verified Address</th>
+                  <th className="py-2.5 px-4">Contract (Unified Mainnet Address)</th>
+                  <th className="py-2.5 px-4">Robinhood (4663)</th>
+                  <th className="py-2.5 px-4">Base (8453)</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-subtle)]">
@@ -403,7 +404,7 @@ export default function LitepaperPage() {
                     addr: "0x2FEE1b921F68A19bFdA0B587dff8bC245727D518",
                   },
                   {
-                    name: "UniswapV3Migrator",
+                    name: "DEX Migrator (V3 RH / V2 Base)",
                     addr: "0xD02a30af2430FD2CCE14987016819AeD4744d20f",
                   },
                   {
@@ -424,7 +425,17 @@ export default function LitepaperPage() {
                         rel="noreferrer"
                         className="inline-flex items-center gap-1.5 text-emerald-400 hover:underline"
                       >
-                        {c.addr} <ExternalLink className="w-3 h-3" />
+                        {c.addr.slice(0, 10)}…{c.addr.slice(-6)} <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </td>
+                    <td className="py-2.5 px-4">
+                      <a
+                        href={`https://basescan.org/address/${c.addr}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-emerald-400 hover:underline"
+                      >
+                        {c.addr.slice(0, 10)}…{c.addr.slice(-6)} <ExternalLink className="w-3 h-3" />
                       </a>
                     </td>
                   </tr>
@@ -452,15 +463,15 @@ export default function LitepaperPage() {
                 active: true,
               },
               {
-                phase: "Phase 3",
-                title: "Base Mainnet (8453) & Season 1 Merkle Airdrop",
-                desc: "Multi-chain expansion with UniswapV2Migrator and 1-click trustless Season 1 claiming via KradlMerkleDistributor.",
-                active: false,
+                phase: "Phase 3 · Live",
+                title: "Base Mainnet (8453) Multi-Chain Expansion",
+                desc: "Production deployment on Base Mainnet with UniswapV2Migrator (permanent LP burn) and unified cross-chain contract addresses.",
+                active: true,
               },
               {
                 phase: "Phase 4",
-                title: "Builder Ecosystem V2",
-                desc: "Atomic Launch + Auto-Vesting in one transaction, Self-Serve Builder Airdrop Studio, and optional Milestone Escrow modules.",
+                title: "Season 1 Merkle Airdrop & Builder Studio V2",
+                desc: "1-click trustless Season 1 claiming via KradlMerkleDistributor, atomic Launch + Auto-Vesting, and optional Milestone Escrow modules.",
                 active: false,
               },
             ].map((item) => (
