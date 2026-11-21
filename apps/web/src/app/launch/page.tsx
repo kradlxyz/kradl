@@ -212,10 +212,10 @@ export default function LaunchPage() {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value as ProjectCategory)}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--bg-elevated)] border border-[var(--border-subtle)] text-sm text-white outline-none"
+                  className="w-full px-3.5 py-2.5 rounded-lg bg-[var(--bg-elevated)] border border-white/[0.1] text-sm text-white outline-none cursor-pointer"
                 >
                   {PROJECT_CATEGORIES.map((c) => (
-                    <option key={c} value={c} className="bg-[#0D1119]">
+                    <option key={c} value={c} className="bg-[#111114] text-white">
                       {c}
                     </option>
                   ))}

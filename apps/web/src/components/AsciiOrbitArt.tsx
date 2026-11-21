@@ -3,123 +3,100 @@
 import React, { useEffect, useState } from "react";
 
 /**
- * Lightweight, zero-dependency ASCII Reveal illustration of Kradl's Cradle Orbit Vessel.
- * Inspired by ascii-reveal: sweeps left-to-right on mount with monochrome glyph resolution,
- * then stays static at 0% CPU (respects prefers-reduced-motion).
+ * Frameless, Hookr-inspired kinetic ASCII Matrix "K" emblem.
+ * Zero boxy card chrome, zero external libraries, < 1% CPU (throttled ~7fps,
+ * respects prefers-reduced-motion), subtle emerald & crisp white shimmer wave.
  */
-const ART_LINES = [
-  "             ·  :  ·             ",
-  "           ·   /\\    ·           ",
-  "         ·    /  \\     ·         ",
-  "        :    / ◆  \\     :        ",
-  "       ·    /      \\     ·       ",
-  "            \\      /             ",
-  "             \\    /              ",
-  "    ╭         \\  /         ╮     ",
-  "    │  ╭       \\/       ╮  │     ",
-  "    │  │                │  │     ",
-  "    ╰   ╲              ╱   ╯     ",
-  "      ╲   ╰──────────╯   ╱       ",
-  "        ╰──────────────╯         ",
-  "      [ KRADL · BLOCK ONE ]      ",
+const K_MASK = [
+  "..................................",
+  "...######..............#######....",
+  "...######............########.....",
+  "...######..........########.......",
+  "...######........########.........",
+  "...######......########...........",
+  "...######....########.............",
+  "...###############................",
+  "...################...............",
+  "...######....########.............",
+  "...######......########...........",
+  "...######........########.........",
+  "...######..........########.......",
+  "...######............########.....",
+  "...######..............#######....",
+  "..................................",
 ];
 
-const SCRAMBLE_GLYPHS = ".:-=+*#%@";
+const ACTIVE_GLYPHS = ["K", "R", "A", "D", "L", "0", "1", "#", "+", "="];
+const FIELD_GLYPHS = ["·", ".", ":", " "];
 
 export function AsciiOrbitArt() {
-  const [revealCol, setRevealCol] = useState(0);
-  const [tick, setTick] = useState(0);
-  const [replayKey, setReplayKey] = useState(0);
-  const maxCols = ART_LINES[0].length;
+  const [frame, setFrame] = useState(0);
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const reduced = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) {
-      setRevealCol(maxCols + 4);
-      return;
-    }
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
 
-    let col = 0;
-    setRevealCol(0);
-    const timer = window.setInterval(() => {
-      col += 1;
-      setRevealCol(col);
-      setTick((t) => t + 1);
-      if (col >= maxCols + 4) {
-        window.clearInterval(timer);
-      }
-    }, 34);
+    const id = window.setInterval(() => {
+      setFrame((f) => (f + 1) % 64);
+    }, 150);
 
-    return () => window.clearInterval(timer);
-  }, [maxCols, replayKey]);
+    return () => window.clearInterval(id);
+  }, []);
 
   return (
     <div
       aria-hidden="true"
-      onMouseEnter={() => {
-        if (revealCol >= maxCols + 4) setReplayKey((k) => k + 1);
-      }}
-      className="select-none rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-surface)]/80 px-5 py-4 font-mono text-[11px] leading-[1.35] tracking-[0.04em] cursor-default transition-colors hover:border-[var(--border-strong)]"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className="relative select-none font-mono text-[11px] leading-[1.3] tracking-[0.14em] cursor-default"
     >
-      <div className="flex items-center justify-between text-[10px] text-[var(--text-muted)] pb-2.5 mb-2.5 border-b border-[var(--border-subtle)]">
-        <span>ORBIT.SYS // 4663</span>
-        <span className="inline-flex items-center gap-1.5 text-emerald-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          MAINNET
-        </span>
-      </div>
-      <pre className="m-0 overflow-hidden">
-        {ART_LINES.map((line, r) => (
+      {/* Subtle monochrome-emerald ambient depth behind the K mark */}
+      <div
+        className="pointer-events-none absolute -inset-6 rounded-full blur-2xl transition-opacity duration-500"
+        style={{
+          background:
+            "radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.14) 0%, rgba(250, 250, 250, 0.03) 45%, transparent 72%)",
+          opacity: hovered ? 1 : 0.72,
+        }}
+      />
+
+      <pre className="relative m-0">
+        {K_MASK.map((row, r) => (
           <div key={r}>
-            {line.split("").map((ch, c) => {
-              if (ch === " ") return <span key={c}> </span>;
+            {row.split("").map((ch, c) => {
+              const diag = r + c;
+              const wave = (diag - frame) & 15;
 
-              // Highlight emerald core diamond
-              if (ch === "◆") {
+              if (ch === "#") {
+                const isEmeraldPulse = wave === 0 || wave === 1 || (hovered && wave === 2);
+                const isBrightWhite = wave === 2 || wave === 3 || wave === 15;
+                const glyphIdx = (r * 7 + c * 3 + Math.floor(frame / 2)) % ACTIVE_GLYPHS.length;
+                const glyph = ACTIVE_GLYPHS[glyphIdx];
+
                 return (
                   <span
                     key={c}
                     className={
-                      c <= revealCol ? "text-emerald-400 font-bold" : "text-zinc-700"
+                      isEmeraldPulse
+                        ? "text-emerald-400 font-semibold"
+                        : isBrightWhite
+                          ? "text-white"
+                          : "text-zinc-400"
                     }
                   >
-                    {c <= revealCol ? ch : SCRAMBLE_GLYPHS[(r + c + tick) % SCRAMBLE_GLYPHS.length]}
-                  </span>
-                );
-              }
-
-              if (c <= revealCol - 2) {
-                const isFooter = r === ART_LINES.length - 1;
-                const isDim = ch === "·" || ch === ":";
-                return (
-                  <span
-                    key={c}
-                    className={
-                      isFooter
-                        ? "text-zinc-400"
-                        : isDim
-                          ? "text-zinc-600"
-                          : "text-zinc-100"
-                    }
-                  >
-                    {ch}
-                  </span>
-                );
-              }
-
-              if (c <= revealCol + 1) {
-                const glyph = SCRAMBLE_GLYPHS[(r * 3 + c + tick) % SCRAMBLE_GLYPHS.length];
-                return (
-                  <span key={c} className="text-emerald-400/80">
                     {glyph}
                   </span>
                 );
               }
 
+              // Subtle architectural dot field
+              const showDot = (r + c) % 2 === 0;
+              if (!showDot) return <span key={c}> </span>;
+              const fieldChar = FIELD_GLYPHS[(r + c + (wave === 0 ? 2 : 0)) % 3];
               return (
-                <span key={c} className="text-zinc-800">
-                  ·
+                <span key={c} className={wave === 0 ? "text-emerald-500/35" : "text-zinc-800"}>
+                  {fieldChar}
                 </span>
               );
             })}

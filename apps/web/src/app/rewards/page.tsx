@@ -107,8 +107,19 @@ export default function RewardsPage() {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[var(--border-subtle)] pb-6">
-        <div>
+      <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-[var(--bg-surface)]/75 p-6 sm:p-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-20 -right-20 h-56 w-56 rounded-full blur-3xl"
+          style={{
+            background: "radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%)",
+          }}
+        />
+        <div className="relative">
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[11px] font-mono text-emerald-400 mb-3">
             <Gift className="w-3.5 h-3.5" />
             {data?.season ?? "Season 1 · Mainnet Genesis"}
